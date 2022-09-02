@@ -43,10 +43,9 @@ INSERT INTO invoices (comp_code, amt, paid, paid_date)
 INSERT INTO industries (code, name)
   VALUES ('it', 'Business IT'),
          ('software', 'Software'),
-         ('goods', 'Consumer Goods');
+         ('oil', 'Oil');
 
 INSERT INTO industries_companies (comp_code, ind_code)
   VALUES ('ibm', 'it'),
          ('ibm', 'software'),
-         ('apple', 'goods'),
          ('apple', 'software');
