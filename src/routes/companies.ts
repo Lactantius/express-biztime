@@ -69,6 +69,22 @@ companies.put("/:code", async (req, res, next) => {
   }
 });
 
+companies.delete("/:code", async (req, res, next) => {
+  try {
+    const code: string = req.params.code;
+    const company = await db.query(
+      `DELETE FROM companies
+        WHERE code=$1
+        RETURNING code`,
+      [code]
+    );
+    checkRowsNotEmpty(company);
+    return res.json({ status: "deleted" });
+  } catch (e) {
+    return next(e);
+  }
+});
+
 export { companies };
 
 /*
@@ -79,7 +95,7 @@ function checkRowsNotEmpty(result: QueryResult): any {
   if (result.rows.length !== 0) {
     return result.rows;
   } else {
-    throw new ExpressError("Entry not found", 404);
+    throw new ExpressError("Company not found", 404);
   }
 }
 
