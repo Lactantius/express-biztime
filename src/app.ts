@@ -16,7 +16,7 @@ app.use("/invoices", invoices);
 /** 404 handler */
 
 app.use(function (req, res, next) {
-  const err = new ExpressError("Not Found", 404);
+  const err = new ExpressError("Resource not found", 404);
   return next(err);
 });
 
@@ -33,4 +33,4 @@ app.use((err: ExpressError, req: any, res: any, next: unknown) => {
   });
 });
 
-module.exports = app;
+export default app;
