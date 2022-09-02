@@ -20,7 +20,13 @@ afterAll(async function () {
   await db.end();
 });
 
-describe("Company routes", () => {
+const testCompany = {
+  code: "test",
+  name: "Test Company",
+  description: "For testing purposes",
+};
+
+describe("GET Company routes", () => {
   test("Get all companies", async () => {
     const res = await request(app).get("/companies");
     expect(res.body).toEqual({
@@ -30,6 +36,7 @@ describe("Company routes", () => {
       ],
     });
   });
+
   test("Get one company", async () => {
     const res = await request(app).get("/companies/ibm");
     expect(res.body).toEqual({
@@ -44,6 +51,16 @@ describe("Company routes", () => {
           },
         ],
       },
+    });
+  });
+});
+
+describe("POST company routes", () => {
+  test("Add a company", async () => {
+    const res = await request(app).post("/companies").send(testCompany);
+    expect(res.statusCode).toBe(201);
+    expect(res.body).toEqual({
+      company: testCompany,
     });
   });
 });
