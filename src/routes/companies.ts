@@ -30,6 +30,13 @@ companies.get("/:code", async (req, res, next) => {
       [code]
     );
     const rows = checkRowsNotEmpty(company, "company");
+    const invoices = await db.query(
+      `SELECT id, amt
+        FROM invoices
+        WHERE comp_code=$1`,
+      [code]
+    );
+    rows[0]["invoices"] = invoices.rows;
     return res.json({ company: rows[0] });
   } catch (e) {
     return next(e);
