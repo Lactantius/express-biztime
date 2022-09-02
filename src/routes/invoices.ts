@@ -51,4 +51,38 @@ invoices.post("/", async (req, res, next) => {
   }
 });
 
+invoices.put("/:id", async (req, res, next) => {
+  try {
+    const id: string = req.params.id;
+    const { amt } = req.body;
+    checkValidJSON([amt]);
+    const invoice: QueryResult<any> = await db.query(
+      `UPDATE invoices SET amt=$2
+        WHERE id=$1
+        RETURNING id, comp_code, amt, paid, add_date, paid_date`,
+      [id, amt]
+    );
+    const rows = checkRowsNotEmpty(invoice, "invoice");
+    return res.json({ invoice: rows[0] });
+  } catch (e) {
+    return next(e);
+  }
+});
+
+invoices.delete("/:id", async (req, res, next) => {
+  try {
+    const id: string = req.params.id;
+    const invoice = await db.query(
+      `DELETE FROM invoices
+        WHERE id=$1
+        RETURNING id`,
+      [id]
+    );
+    checkRowsNotEmpty(invoice, "invoice");
+    return res.json({ status: "deleted" });
+  } catch (e) {
+    return next(e);
+  }
+});
+
 export { invoices };

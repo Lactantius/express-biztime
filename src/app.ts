@@ -27,8 +27,9 @@ app.use((err: ExpressError, req: any, res: any, next: unknown) => {
   res.status(err.status || 500);
 
   return res.json({
-    error: err,
-    message: err.message,
+    //error: err,
+    //message: err.message,
+    error: err.message,
   });
 });
 

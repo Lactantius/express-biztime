@@ -9,6 +9,9 @@ function checkRowsNotEmpty(result: QueryResult, entry: string): any {
   }
 }
 
+/*
+ * Ideally this would check types as well
+ */
 function checkValidJSON(keys: any[]): void {
   if (keys.some((key) => key === null)) {
     throw new ExpressError("Invalid JSON", 400);
