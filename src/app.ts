@@ -2,10 +2,14 @@
 
 import express from "express";
 
+import { companies } from "./routes/companies";
+
 const app = express();
 const ExpressError = require("./expressError");
 
 app.use(express.json());
+
+app.use("/companies", companies);
 
 /** 404 handler */
 
