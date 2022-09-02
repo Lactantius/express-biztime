@@ -60,15 +60,12 @@ invoices.post("/", async (req, res, next) => {
 
 invoices.put("/:id", async (req, res, next) => {
   try {
-    const id: string = req.params.id;
-    const { amt } = req.body;
-    checkValidJSON([amt]);
-    const invoice: QueryResult<any> = await db.query(
-      `UPDATE invoices SET amt=$2
-        WHERE id=$1
-        RETURNING id, comp_code, amt, paid, add_date, paid_date`,
-      [id, amt]
-    );
+    const id = Number(req.params.id);
+    const paidStatus = await isInvoicePaid(id);
+    const { amt, paid } = req.body;
+    checkValidJSON([amt, paid]);
+
+    const invoice = await updateInvoice(id, amt, paid, paidStatus);
     const rows = checkRowsNotEmpty(invoice, "invoice");
     return res.json({ invoice: rows[0] });
   } catch (e) {
@@ -93,3 +90,51 @@ invoices.delete("/:id", async (req, res, next) => {
 });
 
 export { invoices };
+
+/*
+ * Helpers
+ */
+
+async function isInvoicePaid(id: number): Promise<boolean> {
+  const invoice = await db.query(
+    `SELECT paid
+       FROM invoices
+       WHERE id=$1`,
+    [id]
+  );
+  const paid = checkRowsNotEmpty(invoice, "invoice")[0].paid;
+  return paid as boolean;
+}
+
+async function updateInvoice(
+  id: number,
+  amt: number,
+  paid: boolean,
+  paidStatus: boolean
+): Promise<QueryResult<any>> {
+  if (paidStatus === paid) {
+    /* Ignore paid if not updating */
+    return db.query(
+      `UPDATE invoices SET amt=$2
+        WHERE id=$1
+        RETURNING id, comp_code, amt, paid, add_date, paid_date`,
+      [id, amt]
+    );
+  } else if (paid) {
+    /* Update paid_date if newly paid */
+    return db.query(
+      `UPDATE invoices SET amt=$2, paid=$3, paid_date=$4
+        WHERE id=$1
+        RETURNING id, comp_code, amt, paid, add_date, paid_date`,
+      [id, amt, paid, new Date()]
+    );
+  } else {
+    /* Clear paid_date if cancelling payment */
+    return db.query(
+      `UPDATE invoices SET amt=$2, paid=$3, paid_date=$4
+        WHERE id=$1
+        RETURNING id, comp_code, amt, paid, add_date, paid_date`,
+      [id, amt, paid, null]
+    );
+  }
+}
