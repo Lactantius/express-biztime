@@ -4,12 +4,6 @@ import { readFile } from "fs/promises";
 import app from "../../src/app";
 import { db } from "../../src/db";
 
-const testCompany = {
-  code: "test",
-  name: "Test Company",
-  description: "For testing purposes",
-};
-
 beforeAll(async function () {
   await db.query("DELETE FROM companies");
   await db.query("DELETE FROM invoices");
@@ -53,9 +47,17 @@ describe("GET Company routes", () => {
 
 describe("POST company routes", () => {
   test("Add a company", async () => {
-    const res = await request(app).post("/companies").send(testCompany);
+    const res = await request(app)
+      .post("/companies")
+      .send({ name: "Test Company", description: "Unimportant" });
     expect(res.statusCode).toBe(201);
-    expect(res.body).toEqual({ company: testCompany });
+    expect(res.body).toEqual({
+      company: {
+        code: "test-company",
+        name: "Test Company",
+        description: "Unimportant",
+      },
+    });
   });
 });
 

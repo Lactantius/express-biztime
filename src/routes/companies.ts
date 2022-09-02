@@ -2,6 +2,7 @@
 
 import { Router } from "express";
 import { QueryResult } from "pg";
+import slugify from "slugify";
 
 import { db } from "../db";
 const ExpressError = require("../expressError");
@@ -45,8 +46,9 @@ companies.get("/:code", async (req, res, next) => {
 
 companies.post("/", async (req, res, next) => {
   try {
-    const { code, name, description } = req.body;
-    checkValidJSON([code, name, description]);
+    const { name, description } = req.body;
+    checkValidJSON([name, description]);
+    const code = slugify(name, { strict: true, lower: true });
     const company: QueryResult<any> = await db.query(
       `INSERT INTO companies (code, name, description)
         VALUES ($1, $2, $3)
