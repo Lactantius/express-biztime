@@ -12,7 +12,7 @@ export { db };
 
 function connectDB(env: string | undefined) {
   const prefix = "postgresql:///";
-  const DB_URI = env === "test" ? prefix + "bizime_test" : prefix + "biztime";
+  const DB_URI = env === "test" ? prefix + "biztime_test" : prefix + "biztime";
   const db = new Client({ connectionString: DB_URI });
   db.connect();
   return db;
