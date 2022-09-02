@@ -4,15 +4,11 @@ import { readFile } from "fs/promises";
 import app from "../../src/app";
 import { db } from "../../src/db";
 
-beforeEach(async function () {
-  const sql = await readFile("./__tests__/test_data.sql", "utf8");
-  await db.query(sql);
-});
-
-afterEach(async function () {
+beforeAll(async function () {
   await db.query("DELETE FROM companies");
   await db.query("DELETE FROM invoices");
-  return;
+  const sql = await readFile("./__tests__/test_data.sql", "utf8");
+  await db.query(sql);
 });
 
 afterAll(async function () {

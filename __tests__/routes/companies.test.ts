@@ -4,27 +4,23 @@ import { readFile } from "fs/promises";
 import app from "../../src/app";
 import { db } from "../../src/db";
 
-beforeEach(async function () {
-  const sql = await readFile("./__tests__/test_data.sql", "utf8");
-  await db.query(sql);
-});
+const testCompany = {
+  code: "test",
+  name: "Test Company",
+  description: "For testing purposes",
+};
 
-afterEach(async function () {
+beforeAll(async function () {
   await db.query("DELETE FROM companies");
   await db.query("DELETE FROM invoices");
-  return;
+  const sql = await readFile("./__tests__/test_data.sql", "utf8");
+  await db.query(sql);
 });
 
 afterAll(async function () {
   // close db connection
   await db.end();
 });
-
-const testCompany = {
-  code: "test",
-  name: "Test Company",
-  description: "For testing purposes",
-};
 
 describe("GET Company routes", () => {
   test("Get all companies", async () => {
@@ -59,9 +55,7 @@ describe("POST company routes", () => {
   test("Add a company", async () => {
     const res = await request(app).post("/companies").send(testCompany);
     expect(res.statusCode).toBe(201);
-    expect(res.body).toEqual({
-      company: testCompany,
-    });
+    expect(res.body).toEqual({ company: testCompany });
   });
 });
 
