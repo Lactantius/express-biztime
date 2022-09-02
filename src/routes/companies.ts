@@ -5,6 +5,7 @@ import { QueryResult } from "pg";
 
 import { db } from "../db";
 const ExpressError = require("../expressError");
+import { checkRowsNotEmpty, checkValidJSON } from "./helpers";
 
 const companies = Router();
 
@@ -28,7 +29,7 @@ companies.get("/:code", async (req, res, next) => {
         WHERE code=$1`,
       [code]
     );
-    const rows = checkRowsNotEmpty(company);
+    const rows = checkRowsNotEmpty(company, "company");
     return res.json({ company: rows[0] });
   } catch (e) {
     return next(e);
@@ -62,7 +63,7 @@ companies.put("/:code", async (req, res, next) => {
         RETURNING code, name, description`,
       [code, name, description]
     );
-    const rows = checkRowsNotEmpty(company);
+    const rows = checkRowsNotEmpty(company, "company");
     return res.json({ company: rows[0] });
   } catch (e) {
     return next(e);
@@ -78,7 +79,7 @@ companies.delete("/:code", async (req, res, next) => {
         RETURNING code`,
       [code]
     );
-    checkRowsNotEmpty(company);
+    checkRowsNotEmpty(company, "company");
     return res.json({ status: "deleted" });
   } catch (e) {
     return next(e);
@@ -86,21 +87,3 @@ companies.delete("/:code", async (req, res, next) => {
 });
 
 export { companies };
-
-/*
- * Helpers
- */
-
-function checkRowsNotEmpty(result: QueryResult): any {
-  if (result.rows.length !== 0) {
-    return result.rows;
-  } else {
-    throw new ExpressError("Company not found", 404);
-  }
-}
-
-function checkValidJSON(keys: string[]): void {
-  if (keys.some((key) => typeof key !== "string")) {
-    throw new ExpressError("Invalid JSON", 400);
-  }
-}

@@ -3,6 +3,7 @@
 import express from "express";
 
 import { companies } from "./routes/companies";
+import { invoices } from "./routes/invoices";
 
 const app = express();
 const ExpressError = require("./expressError");
@@ -10,13 +11,14 @@ const ExpressError = require("./expressError");
 app.use(express.json());
 
 app.use("/companies", companies);
+app.use("/invoices", invoices);
 
 /** 404 handler */
 
-// app.use(function (req, res, next) {
-//   const err = new ExpressError("Not Found", 404);
-//   return next(err);
-// });
+app.use(function (req, res, next) {
+  const err = new ExpressError("Not Found", 404);
+  return next(err);
+});
 
 /** general error handler */
 
