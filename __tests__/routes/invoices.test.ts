@@ -43,10 +43,9 @@ describe("POST invoice routes", () => {
   test("Add an invoice", async () => {
     const res = await request(app).post("/invoices").send(testInvoice);
     expect(res.statusCode).toBe(201);
-    res.body.invoice.add_date = null;
     expect(res.body).toEqual({
       invoice: {
-        add_date: null,
+        add_date: today,
         comp_code: "ibm",
         amt: 500,
         paid: false,
@@ -70,6 +69,21 @@ describe("PUT invoice routes", () => {
         amt: 200,
         paid: true,
         paid_date: today,
+      },
+    });
+  });
+  test("Cancel payment on an invoice", async () => {
+    const res = await request(app)
+      .put("/invoices/1")
+      .send({ amt: 200, paid: false });
+    expect(res.body).toEqual({
+      invoice: {
+        add_date: today,
+        id: 1,
+        comp_code: "apple",
+        amt: 200,
+        paid: false,
+        paid_date: null,
       },
     });
   });
