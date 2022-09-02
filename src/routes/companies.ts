@@ -38,6 +38,9 @@ companies.get("/:code", async (req, res, next) => {
 companies.post("/", async (req, res, next) => {
   try {
     const { code, name, description } = req.body;
+    if ([code, name, description].some((key) => typeof key !== "string")) {
+      throw new ExpressError("Invalid JSON", 404);
+    }
     const company = await db.query(
       `INSERT INTO companies (code, name, description)
         VALUES ($1, $2, $3)
