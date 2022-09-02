@@ -35,6 +35,7 @@ describe("GET Company routes", () => {
             id: 4,
           },
         ],
+        industries: ["Business IT", "Software"],
       },
     });
   });

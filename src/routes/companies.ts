@@ -31,6 +31,7 @@ companies.get("/:code", async (req, res, next) => {
       [code]
     );
     const rows = checkRowsNotEmpty(company, "company");
+
     const invoices = await db.query(
       `SELECT id, amt
         FROM invoices
@@ -38,6 +39,21 @@ companies.get("/:code", async (req, res, next) => {
       [code]
     );
     rows[0]["invoices"] = invoices.rows;
+
+    const industries = await db.query(
+      `SELECT i.name
+        FROM companies AS c
+          LEFT JOIN
+            industries_companies AS ic
+          ON c.code = ic.comp_code
+          LEFT JOIN
+            industries AS i
+          ON ic.ind_code = i.code
+        WHERE c.code = $1`,
+      [code]
+    );
+    rows[0]["industries"] = industries.rows.map((ind) => ind.name);
+
     return res.json({ company: rows[0] });
   } catch (e) {
     return next(e);
