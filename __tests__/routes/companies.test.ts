@@ -1,15 +1,10 @@
 import request from "supertest";
-import { readFile } from "fs/promises";
 
 import app from "../../src/app";
 import { db } from "../../src/db";
+import { resetDB } from "../helpers/data";
 
-beforeAll(async function () {
-  await db.query("DELETE FROM companies");
-  await db.query("DELETE FROM invoices");
-  const sql = await readFile("./__tests__/test_data.sql", "utf8");
-  await db.query(sql);
-});
+beforeAll(resetDB);
 
 afterAll(async function () {
   // close db connection
