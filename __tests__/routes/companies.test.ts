@@ -64,3 +64,18 @@ describe("POST company routes", () => {
     });
   });
 });
+
+describe("PUT company routes", () => {
+  test("Modify a company", async () => {
+    const res = await request(app)
+      .put("/companies/ibm")
+      .send({ name: "IBM", description: "I've been moved" });
+    expect(res.body).toEqual({
+      company: {
+        code: "ibm",
+        name: "IBM",
+        description: "I've been moved",
+      },
+    });
+  });
+});
