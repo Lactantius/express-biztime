@@ -87,6 +87,21 @@ describe("PUT invoice routes", () => {
       },
     });
   });
+  test("Update invoice without payment", async () => {
+    const res = await request(app)
+      .put("/invoices/1")
+      .send({ amt: 75, paid: false });
+    expect(res.body).toEqual({
+      invoice: {
+        add_date: today,
+        id: 1,
+        comp_code: "apple",
+        amt: 75,
+        paid: false,
+        paid_date: null,
+      },
+    });
+  });
 });
 
 describe("DELETE invoice routes", () => {
