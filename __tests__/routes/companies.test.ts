@@ -30,4 +30,20 @@ describe("Company routes", () => {
       ],
     });
   });
+  test("Get one company", async () => {
+    const res = await request(app).get("/companies/ibm");
+    expect(res.body).toEqual({
+      company: {
+        code: "ibm",
+        description: "Big blue.",
+        name: "IBM",
+        invoices: [
+          {
+            amt: 400,
+            id: 4,
+          },
+        ],
+      },
+    });
+  });
 });
