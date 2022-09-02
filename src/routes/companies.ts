@@ -28,7 +28,7 @@ companies.get("/:code", async (req, res, next) => {
         WHERE code=$1`,
       [code]
     );
-    const rows = checkResult(company);
+    const rows = checkRowsNotEmpty(company);
     return res.json({ company: rows[0] });
   } catch (e) {
     return next(e);
@@ -38,10 +38,8 @@ companies.get("/:code", async (req, res, next) => {
 companies.post("/", async (req, res, next) => {
   try {
     const { code, name, description } = req.body;
-    if ([code, name, description].some((key) => typeof key !== "string")) {
-      throw new ExpressError("Invalid JSON", 404);
-    }
-    const company = await db.query(
+    checkValidJSON([code, name, description]);
+    const company: QueryResult<any> = await db.query(
       `INSERT INTO companies (code, name, description)
         VALUES ($1, $2, $3)
         RETURNING code, name, description`,
@@ -53,16 +51,40 @@ companies.post("/", async (req, res, next) => {
   }
 });
 
+companies.put("/:code", async (req, res, next) => {
+  try {
+    const code: string = req.params.code;
+    const { name, description } = req.body;
+    checkValidJSON([name, description]);
+    const company: QueryResult<any> = await db.query(
+      `UPDATE companies SET name=$2, description=$3
+        WHERE code=$1
+        RETURNING code, name, description`,
+      [code, name, description]
+    );
+    const rows = checkRowsNotEmpty(company);
+    return res.json({ company: rows[0] });
+  } catch (e) {
+    return next(e);
+  }
+});
+
 export { companies };
 
 /*
  * Helpers
  */
 
-function checkResult(result: QueryResult): any {
+function checkRowsNotEmpty(result: QueryResult): any {
   if (result.rows.length !== 0) {
     return result.rows;
   } else {
     throw new ExpressError("Entry not found", 404);
+  }
+}
+
+function checkValidJSON(keys: string[]): void {
+  if (keys.some((key) => typeof key !== "string")) {
+    throw new ExpressError("Invalid JSON", 400);
   }
 }
