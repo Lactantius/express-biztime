@@ -79,3 +79,10 @@ describe("PUT company routes", () => {
     });
   });
 });
+
+describe("DELETE company routes", () => {
+  test("Delete a company", async () => {
+    const res = await request(app).delete("/companies/ibm");
+    expect(res.body).toEqual({ status: "deleted" });
+  });
+});
