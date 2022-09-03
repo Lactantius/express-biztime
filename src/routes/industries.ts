@@ -30,4 +30,21 @@ industries.get("/", async (req, res, next) => {
   }
 });
 
+industries.post("/", async (req, res, next) => {
+  try {
+    const { name } = req.body;
+    checkValidJSON([name]);
+    const code = slugify(name, { strict: true, lower: true });
+    const industryRes = await db.query(
+      `INSERT INTO industries (code, name)
+        VALUES ($1, $2)
+        RETURNING code, name`,
+      [code, name]
+    );
+    return res.status(201).json({ industry: industryRes.rows[0] });
+  } catch (e) {
+    return next(e);
+  }
+});
+
 export { industries };
