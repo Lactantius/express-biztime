@@ -2,7 +2,7 @@
 
 A toy Express.js API for recording data about companies' industries and invoices.
 
-## implementation
+## Implementation
 
 Written with TypeScript, Express.js, using a Postgres database, tested with Jest and Supertest.
 
