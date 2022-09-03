@@ -47,4 +47,24 @@ industries.post("/", async (req, res, next) => {
   }
 });
 
+industries.post("/:code", async (req, res, next) => {
+  try {
+    const compCode = req.body.company;
+    checkValidJSON([compCode]);
+    const indCode = req.params.code;
+    const addRes = await db.query(
+      `INSERT INTO industries_companies (comp_code, ind_code)
+        VALUES ($1, $2)
+        RETURNING comp_code, ind_code`,
+      [compCode, indCode]
+    );
+    const addition = checkRowsNotEmpty(addRes, "Industry code or company code");
+    return res.status(201).json({
+      status: `added ${addition[0].comp_code} to ${addition[0].ind_code} industry`,
+    });
+  } catch (e) {
+    return next(e);
+  }
+});
+
 export { industries };

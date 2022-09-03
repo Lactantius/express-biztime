@@ -37,4 +37,12 @@ describe("POST industries routes", () => {
       },
     });
   });
+
+  test("Add a company to an industry", async () => {
+    const res = await request(app)
+      .post("/industries/oil")
+      .send({ company: "ibm" });
+    //expect(res.statusCode).toBe(201);
+    expect(res.body).toEqual({ status: "added ibm to oil industry" });
+  });
 });
