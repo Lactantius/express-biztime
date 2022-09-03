@@ -18,7 +18,7 @@ describe("GET industries routes", () => {
       industries: [
         { name: "Business IT", companies: ["IBM"] },
         { name: "Software", companies: ["IBM", "Apple Computer"] },
-        { name: "Oil", companies: [] },
+        { name: "Oil", companies: null },
       ],
     });
   });
