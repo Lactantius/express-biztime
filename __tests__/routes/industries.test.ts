@@ -23,3 +23,18 @@ describe("GET industries routes", () => {
     });
   });
 });
+
+describe("POST industries routes", () => {
+  test("POST a new industry", async () => {
+    const res = await request(app)
+      .post("/industries")
+      .send({ name: "Widget Sales" });
+    expect(res.statusCode).toBe(201);
+    expect(res.body).toEqual({
+      industry: {
+        name: "Widget Sales",
+        code: "widget-sales",
+      },
+    });
+  });
+});
